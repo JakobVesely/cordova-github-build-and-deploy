@@ -1,0 +1,46 @@
+name: Build & Deploy Android
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Create Artifact
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+        
+      - name: Install Cordova
+        run: npm install -g cordova
+        
+      - name: Install Cordova Resources Plugin
+        run: sudo npm install -g --unsafe-perm cordova-res
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      #- name: Cordova - Generate Resources
+      #  run: cordova-res android
+        
+      - name: Cordova - Platform Add Android
+        run: cordova platform add android
+
+      - name: Cordova - Build Android
+        run: cordova build android
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: App - Debug
+          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        
+      
