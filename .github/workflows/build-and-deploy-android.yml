@@ -46,7 +46,7 @@ jobs:
       - name: Cordova - Build Release
         run: cordova build android --release
       
-      - name: Upload Debug Artifact
+      - name: Upload Release Artifact
         uses: actions/upload-artifact@v2
         with:
           name: App - Release Usigned
@@ -77,6 +77,12 @@ jobs:
           ls -R
           mv signing/app-release-unsigned-aligned.apk signing/app-release-aligned.apk
           mv signing/app-release-unsigned-signed.apk signing/app-release-signed.apk
+      
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: App - Release Signed
+          path: signing/app-release-signed.apk
           
       - name: List
         run: ls -R
@@ -85,7 +91,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
           packageName: fyi.jakob.cordovaGithubBuildAndDeploy
-          releaseFile: "./signing/app-release-signed.apk"
+          releaseFile: ./signing/app-release-signed.apk
           track: alpha
       #    whatsNewDirectory: distribution/whatsnew
       #    mappingFile: app/build/outputs/mapping/release/mapping.txt
