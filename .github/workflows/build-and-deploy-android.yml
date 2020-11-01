@@ -37,7 +37,7 @@ jobs:
       - name: Cordova - Build Android
         run: cordova build android
       
-      - name: Upload Artifact
+      - name: Upload Debug Artifact
         uses: actions/upload-artifact@v2
         with:
           name: App - Debug
@@ -53,9 +53,6 @@ jobs:
         with:
           name: App - Debug
           path: signing
-          
-      - name: List
-        run: ls -R
       
       - name: Use
         uses: thomastvedt/sign-android-release@v2.2
@@ -66,5 +63,43 @@ jobs:
           alias: ${{ secrets.KEY_NAME }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
           
-      - name: List
+      - name: Rename Files
+        run: |
+          mv signing/app-debug-aligned.apk signing/app-aligned.apk
+          mv signing/app-debug-signed.apk signing/app-signed.apk
+        
+      - name: Upload Aligned Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: App - Aligned
+          path: signing/app-aligned.apk
+        
+      - name: Upload Signed Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: App - Signed
+          path: signing/app-signed.apk
+
+  deploy:
+    name: Deploy to Play Store
+    runs-on: macos-latest
+    needs: [sign]
+    
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: App - Signed
+          path: upload
+          
+      - name: List downloaded Artifact
         run: ls -R
+      
+      #- uses: r0adkll/upload-google-play@v1
+      #  with:
+      #    serviceAccountJson: ${{ SERVICE_ACCOUNT_JSON }}
+      #    packageName: com.example.MyApp
+      #    releaseFile: ${{ SIGNED_RELEASE_FILE}}
+      #    track: beta
+      #    userFraction: 0.33
+      #    whatsNewDirectory: distribution/whatsnew
+      #    mappingFile: app/build/outputs/mapping/release/mapping.txt
