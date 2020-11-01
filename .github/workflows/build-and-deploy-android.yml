@@ -86,7 +86,6 @@ jobs:
           serviceAccountJson: ${{ secrets.SERVICE_ACCOUNT }}
           packageName: fyi.jakob.cordovaGithubBuildAndDeploy
           releaseFile: signing/app-release-signed.apk
-          track: beta
-          userFraction: 1.00
+          track: alpha
       #    whatsNewDirectory: distribution/whatsnew
       #    mappingFile: app/build/outputs/mapping/release/mapping.txt
