@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build & Create Artifact
+    name: Build & Create Unsigned Artifacts
     runs-on: macos-latest
 
     steps:
@@ -34,27 +34,36 @@ jobs:
       - name: Cordova - Platform Add Android
         run: cordova platform add android
 
-      - name: Cordova - Build Android
-        run: cordova build android
+      - name: Cordova - Build Debug
+        run: cordova build android --debug
       
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v2
         with:
           name: App - Debug
           path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Cordova - Build Release
+        run: cordova build android --release
+      
+      - name: Upload Debug Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: App - Release Usigned
+          path: platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
   
-  sign:
-    name: Signing for Play Store
+  sign-deploy:
+    name: Signing & Deploy to Play Store
     runs-on: macos-latest
     needs: [build]
     
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: App - Debug
+          name: App - Release Usigned
           path: signing
       
-      - name: Use
+      - name: Signing with Keystore from Secrets
         uses: thomastvedt/sign-android-release@v2.2
         with:
           releaseDirectory: signing
@@ -63,35 +72,13 @@ jobs:
           alias: ${{ secrets.KEY_NAME }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
           
-      - name: Rename Files
+      - name: Rename signed .apk-Files
         run: |
-          mv signing/app-debug-aligned.apk signing/app-aligned.apk
-          mv signing/app-debug-signed.apk signing/app-signed.apk
-        
-      - name: Upload Aligned Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: App - Aligned
-          path: signing/app-aligned.apk
-        
-      - name: Upload Signed Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: App - Signed
-          path: signing/app-signed.apk
-
-  deploy:
-    name: Deploy to Play Store
-    runs-on: macos-latest
-    needs: [sign]
-    
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: App - Signed
-          path: upload
+          ls -R
+          mv signing/app-release-unsigned-aligned.apk signing/app-release-aligned.apk
+          mv signing/app-release-unsigned-signed.apk signing/app-release-signed.apk
           
-      - name: List downloaded Artifact
+      - name: List
         run: ls -R
       
       #- uses: r0adkll/upload-google-play@v1
