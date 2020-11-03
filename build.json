@@ -1,0 +1,18 @@
+{
+    "android": {
+        "debug": {
+            "keystore": "cordova-github-build-and-deploy.keystore",
+            "storePassword": "DTgEYDJz4OZVteNsDZAr",
+            "alias": "cordova-github-build-and-deploy",
+            "password" : "vGQnFlu0rFxzl0Ss9f2E",
+            "keystoreType": ""
+        },
+        "release": {
+            "keystore": "cordova-github-build-and-deploy.keystore",
+            "storePassword": "DTgEYDJz4OZVteNsDZAr",
+            "alias": "cordova-github-build-and-deploy",
+            "password" : "vGQnFlu0rFxzl0Ss9f2E",
+            "keystoreType": ""
+        }
+    }
+}
