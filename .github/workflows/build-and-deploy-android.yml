@@ -28,9 +28,20 @@ jobs:
       - name: Install Dependencies
         run: npm ci
         
-      #- name: Cordova - Generate Resources
-      #  run: cordova-res android
-        
+      - name: Cordova - Generate Resources
+        run: cordova-res android
+
+      - name: Set Build Version
+        uses: microsoft/variable-substitution@v1 
+        with:
+          files: 'config.xml'
+        env:
+          android-versionCode: "202011050048"
+          ios-CFBundleVersion: "202011050048"
+
+      - name: Print Content
+        run: echo "$(cat config.xml)"
+
       - name: Cordova - Platform Add Android
         run: cordova platform add android
 
