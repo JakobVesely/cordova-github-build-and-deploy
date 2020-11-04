@@ -93,5 +93,5 @@ jobs:
           packageName: fyi.jakob.cordovaGithubBuildAndDeploy
           releaseFile: ./signing/app-release-signed.apk
           track: internal
-          whatsNewDirectory: docs
+          whatsNewDirectory: ./docs/whatsnew/
         # mappingFile: app/build/outputs/mapping/release/mapping.txt
