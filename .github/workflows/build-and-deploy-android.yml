@@ -12,13 +12,27 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-        
+
+      - name: Install GNU-Sed (Homebrew)
+        run: brew install gnu-sed
+
+      - name: Read Properties from package.json
+        uses: myrotvorets/info-from-package-json-action@0.0.2
+        id: packageJson
+
+      - name: Set Environment Variables (Package Name, Version & Buildnummer)
+        run: |
+          echo "PACKAGENAME=${{ steps.packageJson.outputs.packageName }}" >> $GITHUB_ENV
+          echo "VERSIONNUMBER=${{ steps.packageJson.outputs.packageVersion }}" >> $GITHUB_ENV
+          echo "BUILDNUMBER=`date "+%Y%m%d"`$(printf "%05d" ${{ github.run_number }})" >> $GITHUB_ENV
+
       - name: Install Cordova
         run: npm install -g cordova
         
@@ -31,15 +45,10 @@ jobs:
       - name: Cordova - Generate Resources
         run: cordova-res android
 
-      - name: Set Build Version
-        uses: microsoft/variable-substitution@v1 
-        with:
-          files: 'config.xml'
-        env:
-          android-versionCode: "202011050048"
-          ios-CFBundleVersion: "202011050048"
+      - name: Replace Package Name, Version & Buildnummer in config.xml
+        run: gsed -i -E "s/<widget(.)+?>/<widget id=\"${{ env.PACKAGENAME }}\" version=\"${{ env.VERSIONNUMBER }}\" android-versionCode=\"${{ env.BUILDNUMBER }}\" ios-CFBundleVersion=\"${{ env.BUILDNUMBER }}\" xmlns=\"http:\/\/www.w3.org\/ns\/widgets\" xmlns:cdv=\"http:\/\/cordova.apache.org\/ns\/1.0\">/g" config.xml
 
-      - name: Print Content
+      - name: Display Config File
         run: echo "$(cat config.xml)"
 
       - name: Cordova - Platform Add Android
