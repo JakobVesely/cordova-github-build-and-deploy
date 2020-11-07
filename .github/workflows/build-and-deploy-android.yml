@@ -78,6 +78,9 @@ jobs:
     needs: [build]
     
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - uses: actions/download-artifact@v2
         with:
           name: App - Release Usigned
@@ -103,12 +106,6 @@ jobs:
         with:
           name: App - Release Signed
           path: signing/app-release-signed.apk
-          
-      - name: List
-        run: ls -R
-          
-      - name: List Workspace
-        run: ls -R ${{ github.workspace }}
       
       - uses: r0adkll/upload-google-play@v1
         with:
@@ -116,5 +113,4 @@ jobs:
           packageName: fyi.jakob.cordovaGithubBuildAndDeploy
           releaseFile: ./signing/app-release-signed.apk
           track: internal
-          whatsNewDirectory: ${{ github.workspace }}/docs/whatsnew
-        # mappingFile: app/build/outputs/mapping/release/mapping.txt
+          whatsNewDirectory: docs/whatsnew
